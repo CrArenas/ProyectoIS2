@@ -25,7 +25,7 @@ headers = {
 def verificar_api_key():
     api_key_recibida = request.headers.get("X-API-Key")
     if api_key_recibida != API_KEY:
-        return jsonify({"message": "Acceso Denegado"}), 403
+        return jsonify({"message": "Acceso No Denegado"}), 403
         
 @app.route('/predict', methods=['POST'])
 def predecir():
