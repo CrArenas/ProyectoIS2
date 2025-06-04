@@ -11,6 +11,9 @@ services:
         working_dir: /var/www/html
         tty: true
         stdin_open: true
+        networks:
+        red_publica:
+          ipv4_address: 192.168.40.1
     db:
         image: mysql:8.0
         container_name: mysql_db
@@ -23,7 +26,24 @@ services:
             MYSQL_PASSWORD: laravel
         volumes:
             - dbdata:/var/lib/mysql
+        networks:
+        red_publica:
+          ipv4_address: 192.168.40.2
 
+    python_service:
+      image: python:3.12.10
+      container_name: python_container
+      networks:
+        red_publica:
+          ipv4_address: 192.168.40.3
+      command: sleep infinity
+
+networks:
+  red_publica:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.40.0/24
 volumes:
     dbdata:
 
