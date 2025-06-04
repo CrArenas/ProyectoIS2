@@ -1,0 +1,29 @@
+services: 
+    app:
+        build: 
+            context: .
+            dockerfile: Dockerfile
+        container_name: proyectoFinal
+        ports:
+            - "8000:8000"
+        volumes:
+            - .:/var/www/html
+        working_dir: /var/www/html
+        tty: true
+        stdin_open: true
+    db:
+        image: mysql:8.0
+        container_name: mysql_db
+        ports:
+         - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: laravel
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: laravel
+        volumes:
+            - dbdata:/var/lib/mysql
+
+volumes:
+    dbdata:
+
