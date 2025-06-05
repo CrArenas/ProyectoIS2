@@ -8,7 +8,7 @@ services:
             - "8000:8000"
         volumes:
             - .:/var/www/html
-        working_dir: /var/www/html
+        working_dir: /var/www/html/
         tty: true
         stdin_open: true
         networks:
