@@ -1,9 +1,9 @@
 services: 
-    app:
+    Gateway:
         build: 
             context: .
             dockerfile: Dockerfile
-        container_name: proyectoFinal
+        container_name: Gateway
         ports:
             - "8000:8000"
         volumes:
@@ -13,7 +13,38 @@ services:
         stdin_open: true
         networks:
         red_publica:
-          ipv4_address: 192.168.40.1
+          ipv4_address: 192.168.40.2
+    Transacciones:
+        build: 
+            context: .
+            dockerfile: Dockerfile
+        container_name: Transacciones
+        ports:
+            - "8001:8000"
+        volumes:
+            - .:/var/www/html
+        working_dir: /var/www/html
+        tty: true
+        stdin_open: true
+        networks:
+        red_publica:
+          ipv4_address: 192.168.40.3
+    Notificaciones:
+      build: 
+          context: .
+          dockerfile: Dockerfile
+      container_name: Notificaciones
+      ports:
+          - "8002:8000"
+      volumes:
+          - .:/var/www/html
+      working_dir: /var/www/html
+      tty: true
+      stdin_open: true
+      networks:
+      red_publica:
+        ipv4_address: 192.168.40.4
+    
     db:
         image: mysql:8.0
         container_name: mysql_db
@@ -28,14 +59,16 @@ services:
             - dbdata:/var/lib/mysql
         networks:
         red_publica:
-          ipv4_address: 192.168.40.2
+          ipv4_address: 192.168.40.5
 
-    python_service:
+    Api_Flask:
       image: python:3.12.10
-      container_name: python_container
+      container_name: Api_Flask
+      ports:
+          - "5000:5000"
       networks:
         red_publica:
-          ipv4_address: 192.168.40.3
+          ipv4_address: 192.168.40.6
       command: sleep infinity
 
 networks:
