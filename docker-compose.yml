@@ -69,8 +69,6 @@ services:
       networks:
         red_publica:
           ipv4_address: 192.168.40.6
-      
-
 networks:
   red_publica:
     driver: bridge
