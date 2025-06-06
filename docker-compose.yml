@@ -7,7 +7,7 @@ services:
         ports:
             - "8000:8000"
         volumes:
-            - .:/var/www/html
+            - ./gateway:/var/www/html
         working_dir: /var/www/html/
         tty: true
         stdin_open: true
@@ -22,7 +22,7 @@ services:
         ports:
             - "8001:8000"
         volumes:
-            - .:/var/www/html
+            - ./transacciones:/var/www/html
         working_dir: /var/www/html
         tty: true
         stdin_open: true
@@ -37,7 +37,7 @@ services:
       ports:
           - "8002:8000"
       volumes:
-          - .:/var/www/html
+          - ./notificaciones:/var/www/html
       working_dir: /var/www/html
       tty: true
       stdin_open: true
