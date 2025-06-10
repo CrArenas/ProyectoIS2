@@ -1,8 +1,8 @@
 services: 
     gateway:
         build: 
-            context: .
-            dockerfile: Dockerfile
+            context: ./gateway
+            dockerfile: ../Dockerfile
         container_name: gateway
         ports:
             - "8000:8000"
@@ -16,8 +16,8 @@ services:
                 ipv4_address: 192.168.40.2
     transacciones:
         build: 
-            context: .
-            dockerfile: Dockerfile
+            context: ./transacciones
+            dockerfile: ../Dockerfile
         container_name: transacciones
         ports:
             - "8001:8000"
@@ -31,8 +31,8 @@ services:
                 ipv4_address: 192.168.40.3
     notificaciones:
       build: 
-          context: .
-          dockerfile: Dockerfile
+          context: ./notificaciones
+          dockerfile: ../Dockerfile
       container_name: notificaciones
       ports:
           - "8002:8000"
