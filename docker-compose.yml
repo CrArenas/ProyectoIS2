@@ -62,14 +62,19 @@ services:
                 ipv4_address: 192.168.40.5
 
     api_flask:
-      image: python:3.12.10
-      container_name: api_flask
-      ports:
-          - "5000:5000"
-      networks:
-        red_publica:
-          ipv4_address: 192.168.40.6
-      
+        build: 
+          context: .
+          dockerfile: Dockerfile.flask
+        container_name: api_flask
+        ports:
+            - "5000:5000"
+        networks:
+            red_publica:
+                ipv4_address: 192.168.40.6
+        volumes:
+             - ./apiflask:/app
+        working_dir: /app
+    
 
 networks:
   red_publica:
