@@ -11,6 +11,7 @@ class NotificationController extends Controller
     public function enviar(){ //Es público porque vamos a acceder a este por fuera de la clase
         //Obtener las credenciales de Twilio desde el archivo .env
         //Traer los datos que me da Twilio desde el .env. No se sube al repositorio, se ocultan así las credenciales
+        
         $sid = env('TWILIO_SID');
         $token =env('TWILIO_AUTH_TOKEN');
         $twilio = new Client($sid, $token); //Instancia de la librería para que me envíe un nuevo mensaje, recibe el SID y el token
