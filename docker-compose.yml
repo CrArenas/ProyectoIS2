@@ -14,7 +14,7 @@ services:
         networks:
             red_publica:
                 ipv4_address: 192.168.40.2
-        command: sh -c "composer update && php artisan key:generate && php artisan:migrate && php artisan db:seed && php artisan serve --host=0.0.0.0 --port=8000"
+        command: sh -c "composer update && php artisan key:generate && php artisan migrate:refresh && php artisan db:seed && php artisan serve --host=0.0.0.0 --port=8000"
 
     transacciones:
         build: 
@@ -31,7 +31,7 @@ services:
         networks:
             red_publica:
                 ipv4_address: 192.168.40.3
-        command: sh -c "composer update && php artisan key:generate && php artisan:migrate && php artisan db:seed && php artisan serve --host=0.0.0.0 --port=8000"
+        command: sh -c "composer update && php artisan key:generate && php artisan serve --host=0.0.0.0 --port=8000"
     notificaciones:
         build: 
             context: ./notificaciones
@@ -47,7 +47,7 @@ services:
         networks:
             red_publica:
                 ipv4_address: 192.168.40.4
-        command: sh -c "composer update && php artisan key:generate && php artisan:migrate && php artisan db:seed && php artisan serve --host=0.0.0.0 --port=8000"
+        command: sh -c "composer update && php artisan key:generate && php artisan serve --host=0.0.0.0 --port=8000"
 
     db:
         image: mysql:8.0
