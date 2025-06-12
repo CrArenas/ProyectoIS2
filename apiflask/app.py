@@ -17,7 +17,7 @@ modelo = joblib.load("deteccion_fraude.joblib")
 #b = firestore.client()
 
 
-MICROSERVICE_NOTIFICATIONS = "http://localhost:8001/api/send-sms"
+MICROSERVICE_NOTIFICATIONS = "http://notificaciones:8000/api/send-sms"
 headers = {
     "X-API-KEY": API_KEY 
 }
@@ -41,10 +41,10 @@ def predecir():
         prediction = modelo.predict(features)[0]
         fraudulenta = bool(prediction)
 
-        db.collection("transacciones").add({
-            "datos": datos,
-            "fraudulenta": fraudulenta
-        })
+        # db.collection("transacciones").add({
+        #     "datos": datos,
+        #     "fraudulenta": fraudulenta
+        # })
         if fraudulenta:
             
             laravel_response = requests.get(MICROSERVICE_NOTIFICATIONS, headers=headers)
@@ -52,7 +52,7 @@ def predecir():
 
         else: 
             user_id= str(request.headers.get("UserId"))
-            MICROSERVICE_TRANSACTIONS = f"http://localhost:8002/api/transactions/{user_id}"
+            MICROSERVICE_TRANSACTIONS = f"http://transacciones:8000/api/transactions/{user_id}"
             laravel_response = requests.post(MICROSERVICE_TRANSACTIONS, json=datos, headers=headers)
             return jsonify(laravel_response.json())
 
