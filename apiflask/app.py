@@ -46,8 +46,8 @@ def predecir():
         #     "fraudulenta": fraudulenta
         # })
         if fraudulenta:
-            
             laravel_response = requests.get(MICROSERVICE_NOTIFICATIONS, headers=headers)
+            print(f"respuesta de  notifificaciones:{laravel_response}", flush=True)
             return jsonify(laravel_response.json())
 
         else: 
