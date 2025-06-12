@@ -14,6 +14,8 @@ services:
         networks:
             red_publica:
                 ipv4_address: 192.168.40.2
+        command: sh -c "composer update && php artisan key:generate && php artisan:migrate && php artisan db:seed && php artisan serve --host=0.0.0.0 --port=8000"
+
     transacciones:
         build: 
             context: ./transacciones
@@ -29,22 +31,24 @@ services:
         networks:
             red_publica:
                 ipv4_address: 192.168.40.3
+        command: sh -c "composer update && php artisan key:generate && php artisan:migrate && php artisan db:seed && php artisan serve --host=0.0.0.0 --port=8000"
     notificaciones:
-      build: 
-          context: ./notificaciones
-          dockerfile: ../Dockerfile
-      container_name: notificaciones
-      ports:
-          - "8002:8000"
-      volumes:
-          - ./notificaciones:/var/www/html
-      working_dir: /var/www/html
-      tty: true
-      stdin_open: true
-      networks:
-        red_publica:
-            ipv4_address: 192.168.40.4
-        
+        build: 
+            context: ./notificaciones
+            dockerfile: ../Dockerfile
+        container_name: notificaciones
+        ports:
+            - "8002:8000"
+        volumes:
+            - ./notificaciones:/var/www/html
+        working_dir: /var/www/html
+        tty: true
+        stdin_open: true
+        networks:
+            red_publica:
+                ipv4_address: 192.168.40.4
+        command: sh -c "composer update && php artisan key:generate && php artisan:migrate && php artisan db:seed && php artisan serve --host=0.0.0.0 --port=8000"
+
     db:
         image: mysql:8.0
         container_name: mysql_db
