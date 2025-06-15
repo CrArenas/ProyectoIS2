@@ -23,14 +23,14 @@ class UserSeeder extends Seeder
             [
                 'role_id' => 2,
                 'name' => 'Santiago',
-                'email' => 'santiago@gmail.com',
-                'password' => bcrypt('1234')
+                'email' => 'santi@gmail.com',
+                'password' => bcrypt('123456')
             ],
             [
                 'role_id' => 2,
-                'name' => 'Alex',
-                'email' => 'alex@gmail.com',
-                'password' => bcrypt('1234')
+                'name' => 'Laura',
+                'email' => 'laura@gmail.com',
+                'password' => bcrypt('1234567')
             ],
             [
                 'role_id' => 2,

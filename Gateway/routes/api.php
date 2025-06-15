@@ -28,11 +28,14 @@ Route::middleware('auth:api', 'role:admin|user')->group(function () {
 Route::middleware('auth:api', 'role:admin')->group(function () {
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::delete('/transactions/{transaction}', [TransactionController::class, 'destroy']);
+    Route::get('/adminReport', [TransactionController::class, 'adminReport']);
+    Route::get('/adminReport/{user}', [TransactionController::class, 'adminUserReport']);
 });
 
 Route::middleware('auth:api', 'role:user')->group(function () {
     #Route::get('/send-sms', [NotificationController::class,'enviar']);
     Route::post('/predict', [FlaskController::class,'predecirFraude']);
     Route::get('/userstransactions', [TransactionController::class, 'show']);
+    Route::get('/userReport', [TransactionController::class, 'userReport']);
     #Route::post('/transactions', [TransactionController::class, 'store']);
 });

@@ -20,4 +20,6 @@ Route::middleware(['TransactionMiddleware'])->group(function () {
     Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
     Route::get('/userstransactions/{id}', [TransactionController::class, 'show']);
     Route::post('/transactions/{id}', [TransactionController::class, 'store']);
+    Route::get('/userReport/{id}', [TransactionController::class, 'userReport']);
+    Route::get('/adminReport', [TransactionController::class, 'adminReport']);
 });
