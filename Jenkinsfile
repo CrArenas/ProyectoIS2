@@ -3,9 +3,9 @@ pipeline {
     
     // Nos traemos los .env que cargamos en Jenkins y los declaramos
     environment {
-        TRANSACTIONS_ENV = credentials('env-gateway')
-        GATEWAY_ENV = credentials('env-notificaciones')
-        NOTIFICATIONS_ENV = credentials('env-transacciones')
+        GATEWAY_ENV = credentials('env-gateway')
+        TRANSACTIONS_ENV = credentials('env-transactions')
+        NOTIFICATIONS_ENV = credentials('env-notifications')
     }
     
     stages {
@@ -27,27 +27,21 @@ pipeline {
         stage('Copiar la variable de entorno y la ubicamos como .env en el Gateway') {
             steps {
                 dir('gateway') {
-                    sh '''
-                        cp "$GATEWAY_ENV" .env
-                    '''
+                    sh "cp ${GATEWAY_ENV} .env"
                 }
             }
         }
         stage('Copiar la variable de entorno y la ubicamos como .env en el Transacciones') {
             steps {
                 dir('transacciones') {
-                    sh '''
-                        cp "$TRANSACTIONS_ENV" .env
-                    '''
+                    sh "cp ${TRANSACTIONS_ENV} .env"
                 }
             }
         }
         stage('Copiar la variable de entorno y la ubicamos como .env en el Notificaciones') {
             steps {
                 dir('notificaciones') {
-                    sh '''
-                        cp "$NOTIFICATIONS_ENV" .env
-                    '''
+                    sh "cp ${NOTIFICATIONS_ENV} .env"
                 }
             }
         }
