@@ -6,8 +6,8 @@ services:
         container_name: gateway
         ports:
             - "8000:8000"
-        volumes:
-            - ./gateway:/var/www/html
+        #volumes:
+        #    - ./gateway:/var/www/html
         working_dir: /var/www/html/
         tty: true
         stdin_open: true
@@ -23,8 +23,8 @@ services:
         container_name: transacciones
         ports:
             - "8001:8000"
-        volumes:
-            - ./transacciones:/var/www/html
+        #volumes:
+        #    - ./transacciones:/var/www/html
         working_dir: /var/www/html
         tty: true
         stdin_open: true
@@ -39,8 +39,8 @@ services:
         container_name: notificaciones
         ports:
             - "8002:8000"
-        volumes:
-            - ../notificaciones:/var/www/html
+        #volumes:
+        #    - ../notificaciones:/var/www/html
         working_dir: /var/www/html
         tty: true
         stdin_open: true
@@ -59,8 +59,8 @@ services:
             MYSQL_DATABASE: laravel
             MYSQL_USER: laravel
             MYSQL_PASSWORD: laravel
-        volumes:
-            - dbdata:/var/lib/mysql
+        #volumes:
+        #    - dbdata:/var/lib/mysql
         networks:
             red_publica:
                 ipv4_address: 192.168.40.5
@@ -87,5 +87,5 @@ networks:
         - subnet: 192.168.40.0/24
 volumes:
     dbdata:
-    jenkins_home:
+    #jenkins_home:
 
