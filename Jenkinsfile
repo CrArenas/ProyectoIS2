@@ -1,143 +1,153 @@
 pipeline {
     agent any
     
+    // Nos traemos los .env que cargamos en Jenkins y los declaramos
     environment {
-        GATEWAY_CONTAINER = 'gateway'
-        DB_CONTAINER = 'mysql_db'
-        NETWORK_NAME = 'proyectois2_red_publica'
+        TRANSACTIONS_ENV = credentials('env-gateway')
+        GATEWAY_ENV = credentials('env-notificaciones')
+        NOTIFICATIONS_ENV = credentials('env-transacciones')
     }
     
     stages {
-        stage('Checkout') {
+    // Clonamos el repositorio del proyecto
+        stage('Clonar repositorio') {
             steps {
-                echo 'Checking out code...'
-                checkout scm
+                git url: 'https://github.com/CrArenas/ProyectoIS2', branch: 'main'
             }
         }
-        
-        stage('Verify Services') {
+
+    // Crear los contenedores y levantarlos
+        stage('Construir contenedores') {
             steps {
-                echo 'Verifying that required services are running...'
-                script {
+                sh 'docker compose up --build'
+            }
+        }
+
+    // Cuadramos las credenciales en cada proyecto
+        stage('Copiar la variable de entorno y la ubicamos como .env en el Gateway') {
+            steps {
+                dir('gateway') {
                     sh '''
-                        echo "Checking if Gateway container is running..."
-                        docker ps | grep ${GATEWAY_CONTAINER} || (echo "ERROR: Gateway container not running" && exit 1)
-                        
-                        echo "Checking if Database container is running..."
-                        docker ps | grep ${DB_CONTAINER} || (echo "ERROR: Database container not running" && exit 1)
-                        
-                        echo "All required services are running!"
+                        cp "$GATEWAY_ENV" .env
+                    '''
+                }
+            }
+        }
+        stage('Copiar la variable de entorno y la ubicamos como .env en el Transacciones') {
+            steps {
+                dir('transacciones') {
+                    sh '''
+                        cp "$TRANSACTIONS_ENV" .env
+                    '''
+                }
+            }
+        }
+        stage('Copiar la variable de entorno y la ubicamos como .env en el Notificaciones') {
+            steps {
+                dir('notificaciones') {
+                    sh '''
+                        cp "$NOTIFICATIONS_ENV" .env
                     '''
                 }
             }
         }
         
-        stage('Prepare Test Environment') {
+    // Instalamos dependencias en cada uno de los microservicios 
+        stage('Instalar dependencias PHP en Gateway') {
             steps {
-                echo 'Preparing test environment in existing Gateway container...'
-                script {
-                    sh '''
-                        echo "Installing dev dependencies for testing..."
-                        docker exec ${GATEWAY_CONTAINER} composer install --dev
-                        
-                        echo "Preparing test database..."
-                        docker exec ${GATEWAY_CONTAINER} php artisan config:clear
-                        docker exec ${GATEWAY_CONTAINER} php artisan cache:clear
-                    '''
-                }
+                sh '''
+                docker compose exec gateway composer install 
+                '''
             }
         }
-        
-        stage('Database Migration for Tests') {
+        stage('Instalar dependencias PHP en Transacciones') {
             steps {
-                echo 'Setting up test database...'
-                script {
-                    sh '''
-                        echo "Running migrations for testing..."
-                        docker exec ${GATEWAY_CONTAINER} php artisan migrate:fresh --seed --force
-                    '''
-                }
+                sh '''
+                docker compose exec transacciones composer install 
+                '''
             }
         }
-        
-        stage('Run Unit Tests') {
+        stage('Instalar dependencias PHP en Notificaciones') {
             steps {
-                echo 'Running unit tests in Gateway container...'
-                script {
-                    sh '''
-                        echo "Executing PHPUnit Unit Tests..."
-                        docker exec ${GATEWAY_CONTAINER} php artisan test --testsuite=Unit --stop-on-failure
-                    '''
-                }
+                sh '''
+                docker compose exec notificaciones composer install 
+                '''
             }
         }
-        
-        stage('Run Feature Tests') {
+    // Generamos la APP_KEY de cada microservicio
+        stage('Generar APP_KEY Gateway') {
             steps {
-                echo 'Running feature tests in Gateway container...'
-                script {
-                    sh '''
-                        echo "Executing PHPUnit Feature Tests..."
-                        docker exec ${GATEWAY_CONTAINER} php artisan test --testsuite=Feature --stop-on-failure
-                    '''
-                }
+                sh '''
+                docker compose exec gateway php artisan key:generate
+                '''
             }
         }
-        
-        stage('Run All Tests (Alternative)') {
+
+        stage('Generar APP_KEY Transacciones') {
             steps {
-                echo 'Running all tests using php artisan test...'
-                script {
-                    sh '''
-                        echo "Executing all tests with artisan..."
-                        docker exec ${GATEWAY_CONTAINER} php artisan test --parallel
-                    '''
-                }
+                sh '''
+                docker compose exec transacciones php artisan key:generate
+                '''
             }
         }
-        
-        stage('Generate Test Coverage') {
+
+        stage('Generar APP_KEY Notificaciones') {
             steps {
-                echo 'Generating test coverage report...'
-                script {
-                    sh '''
-                        echo "Generating coverage report..."
-                        docker exec ${GATEWAY_CONTAINER} vendor/bin/phpunit --coverage-html coverage --coverage-clover coverage.xml || echo "Coverage generation completed with warnings"
-                    '''
-                }
+                sh '''
+                docker compose exec notificaciones php artisan key:generate
+                '''
             }
         }
-    }
+
+    // Ejecutamos las migraciones del Gateway
+        stage('Ejecutar las migraciones del Gateway') {
+            steps {
+                sh '''
+                docker compose exec gateway php artisan migrate:refresh 
+                '''
+            }
+        }
+    // Ejecutamos los seeders del Gateway
+        stage('Ejecutar los seeders del Gateway') {
+            steps {
+                sh '''
+                docker compose exec gateway php artisan db:seed 
+                '''
+            }
+        }
     
-    post {
-        always {
-            echo 'Cleaning up test artifacts...'
-            script {
+    // Ejecutamos cada servicio
+        stage('Levantar el servicio del Gateway') {
+            steps {
                 sh '''
-                    echo "Clearing caches after tests..."
-                    docker exec ${GATEWAY_CONTAINER} php artisan cache:clear || true
-                    docker exec ${GATEWAY_CONTAINER} php artisan config:clear || true
+                docker compose exec gateway php artisan serve --host=0.0.0.0 --port=8000
                 '''
             }
         }
-        
-        success {
-            echo 'All tests passed successfully! ✅'
-            // Aquí puedes agregar notificaciones de éxito
-        }
-        
-        failure {
-            echo 'Tests failed! ❌'
-            script {
+
+        stage('Levantar el servicio de Transacciones') {
+            steps {
                 sh '''
-                    echo "Showing recent logs for debugging..."
-                    docker logs --tail 50 ${GATEWAY_CONTAINER} || true
+                docker compose exec transacciones php artisan serve --host=0.0.0.0 --port=8000
                 '''
             }
         }
-        
-        cleanup {
-            echo 'Pipeline cleanup completed.'
+
+        stage('Levantar el servicio de Notificaciones') {
+            steps {
+                sh '''
+                docker compose exec notificaciones php artisan serve --host=0.0.0.0 --port=8000
+                '''
+            }
+        }
+
+    // Ejecutamos los test que se encuentran en el Gateway 
+        stage('Ejecutar pruebas Gateway') {
+            steps {
+                sh '''
+                docker compose exec gateway php artisan test
+                '''
+            }
         }
     }
 }
