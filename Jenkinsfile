@@ -80,21 +80,24 @@ pipeline {
         stage('Instalar dependencias PHP en Gateway') {
             steps {
                 sh '''
-                docker exec gateway composer update 
+                docker exec -it gateway bash 
+                composer update 
                 '''
             }
         }
         stage('Instalar dependencias PHP en Transacciones') {
             steps {
                 sh '''
-                docker exec transacciones composer update 
+                docker exec -it transacciones bash 
+                composer update 
                 '''
             }
         }
         stage('Instalar dependencias PHP en Notificaciones') {
             steps {
                 sh '''
-                docker exec notificaciones composer update 
+                docker exec -it notificaciones bash
+                composer update 
                 '''
             }
         }
@@ -102,7 +105,8 @@ pipeline {
         stage('Generar APP_KEY Gateway') {
             steps {
                 sh '''
-                docker exec gateway php artisan key:generate
+                docker exec -it gateway bash 
+                php artisan key:generate
                 '''
             }
         }
@@ -110,7 +114,8 @@ pipeline {
         stage('Generar APP_KEY Transacciones') {
             steps {
                 sh '''
-                docker exec transacciones php artisan key:generate
+                docker exec -it transacciones bash
+                php artisan key:generate
                 '''
             }
         }
@@ -118,7 +123,8 @@ pipeline {
         stage('Generar APP_KEY Notificaciones') {
             steps {
                 sh '''
-                docker exec notificaciones php artisan key:generate
+                docker exec -it notificaciones bash
+                php artisan key:generate
                 '''
             }
         }
@@ -127,7 +133,8 @@ pipeline {
         stage('Ejecutar las migraciones del Gateway') {
             steps {
                 sh '''
-                docker exec gateway php artisan migrate:refresh 
+                docker exec -it gateway bash
+                php artisan migrate:refresh 
                 '''
             }
         }
@@ -135,7 +142,8 @@ pipeline {
         stage('Ejecutar los seeders del Gateway') {
             steps {
                 sh '''
-                docker exec gateway php artisan db:seed 
+                docker exec -it gateway bash 
+                php artisan db:seed 
                 '''
             }
         }
@@ -144,7 +152,8 @@ pipeline {
         stage('Levantar el servicio del Gateway') {
             steps {
                 sh '''
-                docker exec gateway php artisan serve --host=0.0.0.0 --port=8000
+                docker exec -it gateway bash
+                php artisan serve --host=0.0.0.0 --port=8000
                 '''
             }
         }
@@ -152,7 +161,8 @@ pipeline {
         stage('Levantar el servicio de Transacciones') {
             steps {
                 sh '''
-                docker exec transacciones php artisan serve --host=0.0.0.0 --port=8000
+                docker exec -it transacciones bash 
+                php artisan serve --host=0.0.0.0 --port=8000
                 '''
             }
         }
@@ -160,7 +170,8 @@ pipeline {
         stage('Levantar el servicio de Notificaciones') {
             steps {
                 sh '''
-                docker exec notificaciones php artisan serve --host=0.0.0.0 --port=8000
+                docker exec -it notificaciones bash
+                php artisan serve --host=0.0.0.0 --port=8000
                 '''
             }
         }
@@ -169,7 +180,8 @@ pipeline {
         stage('Ejecutar pruebas Gateway') {
             steps {
                 sh '''
-                docker exec gateway php artisan test
+                docker exec -it gateway bash 
+                php artisan test
                 '''
             }
         }
