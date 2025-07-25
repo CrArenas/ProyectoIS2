@@ -9,6 +9,14 @@ pipeline {
     }
     
     stages {
+
+    // Limpiamos el Workspace para que el Jenkinsfile salga bien
+        stage('Limpiar el workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
     // Clonamos el repositorio del proyecto
         stage('Clonar repositorio') {
             steps {
@@ -72,21 +80,21 @@ pipeline {
         stage('Instalar dependencias PHP en Gateway') {
             steps {
                 sh '''
-                docker compose exec gateway composer update 
+                docker exec gateway composer update 
                 '''
             }
         }
         stage('Instalar dependencias PHP en Transacciones') {
             steps {
                 sh '''
-                docker compose exec transacciones composer update 
+                docker exec transacciones composer update 
                 '''
             }
         }
         stage('Instalar dependencias PHP en Notificaciones') {
             steps {
                 sh '''
-                docker compose exec notificaciones composer update 
+                docker exec notificaciones composer update 
                 '''
             }
         }
@@ -94,7 +102,7 @@ pipeline {
         stage('Generar APP_KEY Gateway') {
             steps {
                 sh '''
-                docker compose exec gateway php artisan key:generate
+                docker exec gateway php artisan key:generate
                 '''
             }
         }
@@ -102,7 +110,7 @@ pipeline {
         stage('Generar APP_KEY Transacciones') {
             steps {
                 sh '''
-                docker compose exec transacciones php artisan key:generate
+                docker exec transacciones php artisan key:generate
                 '''
             }
         }
@@ -110,7 +118,7 @@ pipeline {
         stage('Generar APP_KEY Notificaciones') {
             steps {
                 sh '''
-                docker compose exec notificaciones php artisan key:generate
+                docker exec notificaciones php artisan key:generate
                 '''
             }
         }
@@ -119,7 +127,7 @@ pipeline {
         stage('Ejecutar las migraciones del Gateway') {
             steps {
                 sh '''
-                docker compose exec gateway php artisan migrate:refresh 
+                docker exec gateway php artisan migrate:refresh 
                 '''
             }
         }
@@ -127,7 +135,7 @@ pipeline {
         stage('Ejecutar los seeders del Gateway') {
             steps {
                 sh '''
-                docker compose exec gateway php artisan db:seed 
+                docker exec gateway php artisan db:seed 
                 '''
             }
         }
@@ -136,7 +144,7 @@ pipeline {
         stage('Levantar el servicio del Gateway') {
             steps {
                 sh '''
-                docker compose exec gateway php artisan serve --host=0.0.0.0 --port=8000
+                docker exec gateway php artisan serve --host=0.0.0.0 --port=8000
                 '''
             }
         }
@@ -144,7 +152,7 @@ pipeline {
         stage('Levantar el servicio de Transacciones') {
             steps {
                 sh '''
-                docker compose exec transacciones php artisan serve --host=0.0.0.0 --port=8000
+                docker exec transacciones php artisan serve --host=0.0.0.0 --port=8000
                 '''
             }
         }
@@ -152,7 +160,7 @@ pipeline {
         stage('Levantar el servicio de Notificaciones') {
             steps {
                 sh '''
-                docker compose exec notificaciones php artisan serve --host=0.0.0.0 --port=8000
+                docker exec notificaciones php artisan serve --host=0.0.0.0 --port=8000
                 '''
             }
         }
@@ -161,7 +169,7 @@ pipeline {
         stage('Ejecutar pruebas Gateway') {
             steps {
                 sh '''
-                docker compose exec gateway php artisan test
+                docker exec gateway php artisan test
                 '''
             }
         }
