@@ -79,110 +79,122 @@ pipeline {
     // Instalamos dependencias en cada uno de los microservicios 
         stage('Instalar dependencias PHP en Gateway') {
             steps {
-                sh '''
-                docker exec -it gateway bash 
-                composer update 
-                '''
+                dir('gateway') {
+                    sh '''
+                        composer update 
+                    '''
+                }
             }
         }
         stage('Instalar dependencias PHP en Transacciones') {
             steps {
-                sh '''
-                docker exec -it transacciones bash 
-                composer update 
-                '''
+                dir('transacciones') {
+                    sh '''
+                        composer update 
+                    '''
+                }
             }
         }
         stage('Instalar dependencias PHP en Notificaciones') {
             steps {
-                sh '''
-                docker exec -it notificaciones bash
-                composer update 
-                '''
+                dir('notificaciones') {
+                    sh '''
+                        composer update 
+                    '''
+                }
             }
         }
     // Generamos la APP_KEY de cada microservicio
         stage('Generar APP_KEY Gateway') {
             steps {
-                sh '''
-                docker exec -it gateway bash 
-                php artisan key:generate
-                '''
+                dir('gateway') {
+                    sh '''
+                        php artisan key:generate
+                    '''
+                }
             }
         }
 
         stage('Generar APP_KEY Transacciones') {
             steps {
-                sh '''
-                docker exec -it transacciones bash
-                php artisan key:generate
-                '''
+                dir('transacciones') {
+                    sh '''
+                        php artisan key:generate
+                    '''
+                }
             }
         }
 
         stage('Generar APP_KEY Notificaciones') {
             steps {
-                sh '''
-                docker exec -it notificaciones bash
-                php artisan key:generate
-                '''
+                dir('notificaciones') {
+                    sh '''
+                        php artisan key:generate
+                    '''
+                }
             }
         }
 
     // Ejecutamos las migraciones del Gateway
         stage('Ejecutar las migraciones del Gateway') {
             steps {
-                sh '''
-                docker exec -it gateway bash
-                php artisan migrate:refresh 
-                '''
+                dir('gateway') {
+                    sh '''
+                        php artisan migrate:refresh 
+                    '''
+                }
             }
         }
     // Ejecutamos los seeders del Gateway
         stage('Ejecutar los seeders del Gateway') {
             steps {
-                sh '''
-                docker exec -it gateway bash 
-                php artisan db:seed 
-                '''
+                dir('gateway') {
+                    sh '''
+                        php artisan db:seed 
+                    '''
+                }
             }
         }
     
     // Ejecutamos cada servicio
         stage('Levantar el servicio del Gateway') {
             steps {
-                sh '''
-                docker exec -it gateway bash
-                php artisan serve --host=0.0.0.0 --port=8000
-                '''
+                dir('gateway') {
+                    sh '''
+                        php artisan serve --host=0.0.0.0 --port=8000
+                    '''
+                }
             }
         }
 
         stage('Levantar el servicio de Transacciones') {
             steps {
-                sh '''
-                docker exec -it transacciones bash 
-                php artisan serve --host=0.0.0.0 --port=8000
-                '''
+                dir('transacciones') {
+                    sh '''
+                        php artisan serve --host=0.0.0.0 --port=8000
+                    '''
+                }
             }
         }
 
         stage('Levantar el servicio de Notificaciones') {
             steps {
-                sh '''
-                docker exec -it notificaciones bash
-                php artisan serve --host=0.0.0.0 --port=8000
-                '''
+                dir('notificaciones') {
+                    sh '''
+                        php artisan serve --host=0.0.0.0 --port=8000
+                    '''
+                }
             }
         }
 
     // Ejecutamos los test que se encuentran en el Gateway 
         stage('Ejecutar pruebas Gateway') {
             steps {
-                sh '''
-                docker exec -it gateway bash 
-                php artisan test
-                '''
+                dir('gateway') {
+                    sh '''
+                        php artisan test
+                    '''
+                }
             }
         }
     }
