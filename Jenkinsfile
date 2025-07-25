@@ -4,8 +4,8 @@ pipeline {
     // Nos traemos los .env que cargamos en Jenkins y los declaramos
     environment {
         GATEWAY_ENV = credentials('env-gateway')
-        TRANSACTIONS_ENV = credentials('env-transactions')
-        NOTIFICATIONS_ENV = credentials('env-notifications')
+        TRANSACTIONS_ENV = credentials('env-transacciones')
+        NOTIFICATIONS_ENV = credentials('env-notificaciones')
     }
     
     stages {
@@ -19,7 +19,23 @@ pipeline {
     // Crear los contenedores y levantarlos
         stage('Construir contenedores') {
             steps {
-                sh 'docker compose up --build'
+                sh 'docker compose up -d --build'
+            }
+        }
+
+        stage('Esperar MySQL') {
+            steps {
+                echo 'Esperando a que MySQL esté disponible...'
+                sh '''
+                    for i in {1..20}; do
+                        if docker exec mysql_db mysqladmin ping -h"127.0.0.1" -uroot -proot --silent; then
+                            echo "✅ MySQL está disponible"
+                            break
+                        fi
+                        echo "⏳ Esperando MySQL... ($i)"
+                        sleep 5
+                    done
+                '''
             }
         }
 
@@ -56,21 +72,21 @@ pipeline {
         stage('Instalar dependencias PHP en Gateway') {
             steps {
                 sh '''
-                docker compose exec gateway composer install 
+                docker compose exec gateway composer update 
                 '''
             }
         }
         stage('Instalar dependencias PHP en Transacciones') {
             steps {
                 sh '''
-                docker compose exec transacciones composer install 
+                docker compose exec transacciones composer update 
                 '''
             }
         }
         stage('Instalar dependencias PHP en Notificaciones') {
             steps {
                 sh '''
-                docker compose exec notificaciones composer install 
+                docker compose exec notificaciones composer update 
                 '''
             }
         }
