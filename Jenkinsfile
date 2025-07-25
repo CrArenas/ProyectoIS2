@@ -27,7 +27,7 @@ pipeline {
     // Crear los contenedores y levantarlos
         stage('Construir contenedores') {
             steps {
-                sh 'docker compose up -d --build'
+                sh 'docker compose up --build'
             }
         }
 
@@ -144,7 +144,7 @@ pipeline {
         stage('Levantar el servicio del Gateway') {
             steps {
                 sh '''
-                    docker exec gateway -d php artisan serve --host=0.0.0.0 --port=8000
+                    docker exec -d gateway php artisan serve --host=0.0.0.0 --port=8000
                 '''
             }
         }
@@ -152,7 +152,7 @@ pipeline {
         stage('Levantar el servicio de Transacciones') {
             steps {
                 sh '''
-                    docker exec transacciones -d php artisan serve --host=0.0.0.0 --port=8000
+                    docker exec -d transacciones php artisan serve --host=0.0.0.0 --port=8000
                 '''
             }
         }
@@ -160,7 +160,7 @@ pipeline {
         stage('Levantar el servicio de Notificaciones') {
             steps {
                 sh '''
-                    docker exec notificaciones -d php artisan serve --host=0.0.0.0 --port=8000
+                    docker exec -d notificaciones php artisan serve --host=0.0.0.0 --port=8000
                 '''
             }
         }
