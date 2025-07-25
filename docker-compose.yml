@@ -7,7 +7,7 @@ services:
         ports:
             - "8000:8000"
         volumes:
-            - ./gateway:/var/www/html
+            - /var/jenkins_home/workspace/proyectofinal/gateway:/var/www/html
         working_dir: /var/www/html/
         tty: true
         stdin_open: true
@@ -24,7 +24,7 @@ services:
         ports:
             - "8001:8000"
         volumes:
-            - ./transacciones:/var/www/html
+            - /var/jenkins_home/workspace/proyectofinal/transacciones:/var/www/html
         working_dir: /var/www/html
         tty: true
         stdin_open: true
@@ -40,7 +40,7 @@ services:
         ports:
             - "8002:8000"
         volumes:
-            - ./notificaciones:/var/www/html
+            - /var/jenkins_home/workspace/proyectofinal/notificaciones:/var/www/html
         working_dir: /var/www/html
         tty: true
         stdin_open: true
