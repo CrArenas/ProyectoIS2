@@ -6,8 +6,8 @@ services:
         container_name: gateway
         ports:
             - "8000:8000"
-        volumes:
-            - ./gateway:/var/www/html
+        #volumes:
+        #    - ./gateway:/var/www/html
         working_dir: /var/www/html/
         tty: true
         stdin_open: true
@@ -23,8 +23,8 @@ services:
         container_name: transacciones
         ports:
             - "8001:8000"
-        volumes:
-            - ./transacciones:/var/www/html
+        #volumes:
+        #    - ./transacciones:/var/www/html
         working_dir: /var/www/html
         tty: true
         stdin_open: true
@@ -39,8 +39,8 @@ services:
         container_name: notificaciones
         ports:
             - "8002:8000"
-        volumes:
-            - ./notificaciones:/var/www/html
+        #volumes:
+        #    - ./notificaciones:/var/www/html
         working_dir: /var/www/html
         tty: true
         stdin_open: true

@@ -1,44 +1,22 @@
 FROM jenkins/jenkins:lts
 
-# Cambiar a usuario root para instalar Docker
 USER root
 
-# Instalar Docker CLI
-RUN apt-get update && \
-    apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release && \
-    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-    apt-get update && \
-    apt-get install -y docker-ce-cli && \
-    rm -rf /var/lib/apt/lists/*
-# Instalar PHP y extensiones
 RUN apt-get update && apt-get install -y \
-    php php-cli php-mbstring php-xml php-curl unzip curl git
+    php php-cli php-mbstring php-xml php-curl unzip \
+    curl git apt-transport-https ca-certificates gnupg2 \
+    software-properties-common lsb-release docker.io \
+    && apt-get clean
 
-# Instalar Composer
+RUN mkdir -p ~/.docker/cli-plugins && \
+    curl -SL https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose && \
+    chmod +x ~/.docker/cli-plugins/docker-compose
+
+RUN usermod -aG docker jenkins && \
+    chown -R jenkins:jenkins /var/jenkins_home
+
 RUN curl -sS https://getcomposer.org/installer | php && \
-    mv composer.phar /usr/local/bin/composer
+mv composer.phar /usr/local/bin/composer && \
+composer --version
 
-# Instalar Docker Compose
-RUN curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && \
-    chmod +x /usr/local/bin/docker-compose && \
-    ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-# Agregar el usuario jenkins al grupo docker
-RUN groupadd -g 999 docker || true && \
-    usermod -aG docker jenkins
-
-
-# Volver al usuario jenkins
 USER jenkins
-
-# Configurar Jenkins para ejecutarse en modo daemon
-#ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
-
-# Exponer puertos
-EXPOSE 8080 50000
