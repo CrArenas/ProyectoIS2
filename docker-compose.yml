@@ -75,8 +75,8 @@ services:
         networks:
             red_publica:
                 ipv4_address: 192.168.40.6
-        volumes:
-             - ./apiflask:/app
+        #volumes:
+        #     - ./apiflask:/app
         working_dir: /app    
 
 networks:
